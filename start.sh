@@ -1,9 +1,10 @@
 #!/bin/bash
 # This script is used to start the FastAPI app
 
-# Install dependencies
-pip install -r requirements.txt
+# Check if PORT environment variable is set, otherwise default to 8000
+PORT=${PORT:-8000}
 
-# Start the app
-uvicorn main:app --host 0.0.0.0 --port $PORT
+# Run the app
+uvicorn main:app --host 0.0.0.0 --port "$PORT"
+
 
