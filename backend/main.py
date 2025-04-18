@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse
 import cv2
 import numpy as np
 import os
-import gdown
+import requests
 
 app = FastAPI()
 
@@ -24,19 +24,23 @@ app.mount("/static", StaticFiles(directory="frontend"), name="static")
 def serve_index():
     return FileResponse("frontend/index.html")
 
-# === Download YOLOv4 weights from Google Drive if not found ===
+# === Download YOLOv4 weights from GitHub Releases if not found ===
 weights_path = "yolov4.weights"
-gdrive_url = "https://drive.google.com/uc?id=1ndV6eqmcxjj5TQdf55XMhe3LIPMZEspj"
+weights_url = "https://github.com/sudip547/looky-yolov4/releases/download/yolov4/yolov4.weights"
 
 if not os.path.exists(weights_path):
-    print("Downloading yolov4.weights from Google Drive...")
-    gdown.download(gdrive_url, weights_path, quiet=False)
+    print("Downloading yolov4.weights from GitHub...")
+    r = requests.get(weights_url, allow_redirects=True)
+    with open(weights_path, "wb") as f:
+        f.write(r.content)
+    print("Download complete!")
 
 # === Load YOLOv4 ===
 net = cv2.dnn.readNetFromDarknet("yolov4.cfg", "yolov4.weights")
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
+# Load COCO class names
 with open("coco.names", "r") as f:
     classes = [line.strip() for line in f.readlines()]
 
@@ -83,5 +87,3 @@ async def detect(file: UploadFile = File(...)):
         })
 
     return {"results": results}
-
-
