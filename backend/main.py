@@ -1,10 +1,15 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import cv2
 import numpy as np
 import os
+import gdown
 
 app = FastAPI()
+
+# Enable CORS for frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,11 +17,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# === Check if yolov4.weights exists ===
-if not os.path.exists("yolov4.weights"):
-    raise FileNotFoundError(
-        "yolov4.weights file is missing. Please upload it using the Render Shell."
-)
+# Serve static frontend files
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+@app.get("/")
+def serve_index():
+    return FileResponse("frontend/index.html")
+
+# === Download YOLOv4 weights from Google Drive if not found ===
+weights_path = "yolov4.weights"
+gdrive_url = "https://drive.google.com/uc?id=1ndV6eqmcxjj5TQdf55XMhe3LIPMZEspj"
+
+if not os.path.exists(weights_path):
+    print("Downloading yolov4.weights from Google Drive...")
+    gdown.download(gdrive_url, weights_path, quiet=False)
 
 # === Load YOLOv4 ===
 net = cv2.dnn.readNetFromDarknet("yolov4.cfg", "yolov4.weights")
@@ -69,4 +83,5 @@ async def detect(file: UploadFile = File(...)):
         })
 
     return {"results": results}
+
 
