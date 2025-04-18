@@ -1,26 +1,20 @@
+# Use an official Python runtime as the base image
 FROM python:3.12-slim
 
-# Install OpenCV and other required system packages
-RUN apt-get update && apt-get install -y \
-    libglib2.0-0 libsm6 libxext6 libxrender-dev libgl1-mesa-glx ffmpeg \
-    && apt-get clean
-
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy everything to the container
+# Copy the current directory contents into the container
 COPY . .
 
-# Install Python dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Railway uses this env var for port
-ENV PORT=8000
+# Expose the port that the FastAPI app will run on
+EXPOSE 8000
 
-# Expose the port to Railway
-EXPOSE $PORT
+# Run the FastAPI app using Uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
-# Use entrypoint to ensure $PORT is parsed correctly
-ENTRYPOINT ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"]
 
 
