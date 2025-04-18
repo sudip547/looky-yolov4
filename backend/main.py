@@ -92,6 +92,11 @@ async def detect(file: UploadFile = File(...)):
 if __name__ == "__main__":
     import uvicorn
     import os
-    port = int(os.environ.get("PORT", 8000))  # Fallback to 8000 if PORT is not set
+
+    # Use the environment variable PORT, default to 8000 if not set
+    port = int(os.environ.get("PORT", 8000))
+
+    # Run the FastAPI application using uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+
 
