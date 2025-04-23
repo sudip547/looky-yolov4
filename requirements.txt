@@ -1,4 +1,5 @@
 fastapi
+gdown
 uvicorn
 opencv-python
 numpy
