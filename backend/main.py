@@ -36,7 +36,7 @@ if not os.path.exists(weights_path):
     print("Download complete!")
 
 # === Load YOLOv4 ===
-net = cv2.dnn.readNetFromDarknet("yolov4.cfg", "yolov4.weights")
+net = cv2.dnn.readNetFromDarknet("yolov4-tiny.cfg", "yolov4-tiny.weights")
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
