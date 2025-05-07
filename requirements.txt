@@ -1,8 +1,8 @@
 fastapi
-gdown
 uvicorn
-opencv-python
-numpy
 python-multipart
+opencv-python-headless
+numpy
+
 
 
